@@ -5,11 +5,13 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <title>RecyclingETH</title>
+    <script src="https://cdn.jsdelivr.net/npm/@walletconnect/web3-provider@1.7.1/dist/umd/index.min.js"></script>
+  	<script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
   </head>
   <body>
-    <div>
+    <div class="myContent">
       <div>
-        <img alt="Logo" src="looo.jpeg">
+        <img alt="Logo" src="logo.png">
       </div>
 
       <div>
@@ -17,24 +19,77 @@
       </div>
 
       <div>
-        <button>Recycle</button><!--onclick="be_awsome()"-->
+        <button onclick="connectWC()">Recycle</button><!--onclick=""connectWC()"-->
       </div>
     </div>
+
+    <div class="lines">
+	  <div class="line"></div>
+	  <div class="line"></div>
+	  <div class="line"></div>
+	</div>
   </body>
 </html>
 
-<script>
-  function be_awsome() {
-      
-  }
-</script>
+<script type="text/javascript">
+    var account;
+
+    // https://docs.walletconnect.com/quick-start/dapps/web3-provider
+    var provider = new WalletConnectProvider.default({
+      rpc: {
+        1: "https://cloudflare-eth.com/", // https://ethereumnodes.com/
+        137: "https://polygon-rpc.com/", // https://docs.polygon.technology/docs/develop/network-details/network/
+        // ...
+
+      },
+      // bridge: 'https://bridge.walletconnect.org',
+    });
+
+    var connectWC = async () => {
+      await provider.enable();
+
+      //  Create Web3 instance
+      const web3 = new Web3(provider);
+      window.w3 = web3
+
+      var accounts  = await web3.eth.getAccounts(); // get all connected accounts
+      account = accounts[0]; // get the primary account
+    }
 
 
+    var sign = async (msg) => {
+      if (w3) {
+        return await w3.eth.personal.sign(msg, account)
+      } else {
+        return false
+      }
+    }
+
+    var contract = async (abi, address) => {
+      if (w3) {
+        return new w3.eth.Contract(abi, address)
+      } else {
+        return false
+      }
+    }
+
+    var disconnect = async () => {
+      // Close provider session
+      await provider.disconnect()
+    }
+
+
+    var address = "0x4b4f8ca8fb3e66b5ddafcebfe86312cec486dae1"
+    var abi = [{"inputs":[],"name":"count","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"increment","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"nonpayable","type":"function"}]
+
+
+  </script>
 <style>
   h1{
     font-size: 40px;
+    color: white;
   }
-  body{
+  .myContent{
     vertical-align: middle;
     align-content: center;
     padding: 70px 0;
@@ -55,4 +110,28 @@
     border-radius: 12px;
     font-size: 20px;
   }
+  html, body {
+	  width: 100%;
+	  height:100%;
+  }
+
+	body {
+	    background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+	    background-size: 400% 400%;
+	    animation: gradient 15s ease infinite;
+	}
+
+	@keyframes gradient {
+	    0% {
+	        background-position: 0% 50%;
+	    }
+	    50% {
+	        background-position: 100% 50%;
+	    }
+	    100% {
+	        background-position: 0% 50%;
+	    }
+	}
 </style>
+
+
